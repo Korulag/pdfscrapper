@@ -1,14 +1,16 @@
+SECRET_KEY = 'most_secret_key'
+DEBUG = True
+
 CORE_APPS = [
+    'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
 ]
 
 THIRD_PARTY_APPS = [
     'rest_framework',
-    'corsheaders,',
-    'django_filters',
+    'corsheaders',
     'django_extensions',
 ]
 
@@ -35,11 +37,11 @@ WSGI_APPLICATION = 'pdfscrapper.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'scrapperdb',
+        'NAME': 'scrapper',
         'USER': 'scrapper',
         'PASSWORD': None,
         'HOST': 'localhost',
-        'PORT': 5432
+        'PORT': 8432
     }
 }
 
@@ -67,7 +69,8 @@ LOGGING = {
             'format': '%(levelname)s %(asctime)s %(message)s'
         },
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d '
+                      '%(thread)d %(message)s'
         },
     },
     'handlers': {
@@ -85,31 +88,58 @@ LOGGING = {
     'loggers': {
         'urllib3': {
             'level': 'DEBUG',
-            'handlers': ['urllib3', 'fluent'],
+            'handlers': ['urllib3'],
             'propagate': False,
         },
         'django': {
-            'handlers': ['console', 'fluent'],
+            'handlers': ['console'],
             'propagate': False,
         },
         'django.request': {
-            'handlers': ['console', 'fluent'],
+            'handlers': ['console'],
             'level': LOGGING_LEVEL,
             'propagate': False,
         },
         'django.security': {
-            'handlers': ['console', 'fluent'],
+            'handlers': ['console'],
             'level': 'ERROR',
             'propagate': False,
         },
         'py.warnings': {
-            'handlers': ['console', 'fluent'],
+            'handlers': ['console'],
             'propagate': False,
         },
         'django.db.backends': {
             'level': 'ERROR',
-            'handlers': ['console', 'fluent'],
+            'handlers': ['console'],
             'propagate': False,
         },
     },
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (),
+
+    'DEFAULT_RENDERER_CLASSES': (
+        'pdfscrapper.api.documents.render.CamelCaseJSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ),
+    'DEFAULT_PARSER_CLASSES': (
+        'djangorestframework_camel_case.parser.CamelCaseFormParser',
+        'djangorestframework_camel_case.parser.CamelCaseMultiPartParser',
+        'djangorestframework_camel_case.parser.CamelCaseJSONParser',
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser'
+    ),
+
+    'DEFAULT_PAGINATION_CLASS':
+        'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+    'TEST_REQUEST_RENDERER_CLASSES': (
+        'pdfscrapper.api.documents.render.CamelCaseJSONRenderer',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (),
 }
